@@ -18,12 +18,16 @@ import { fetchBarcodeInfo, fetchIngredientsInfo } from "./barcodeAPI";
     setTimeout(() => codeReader.stopContinuousDecode())
   })
 
-  let inputBarcode = "";
+  let inputBarcode = "8801117752804";
   let rawMaterials = [];
-  const fetchBarcode = async () => {
-    const barcodes = await fetchBarcodeInfo(inputBarcode);
-    rawMaterials = await fetchIngredientsInfo(barcodes);
+  const fetchRawMaterials = async () => {
+    const result = await fetch(`http://localhost:3030/raw-materials?barcode=${inputBarcode}`);
+    const json = await result.json();
+    
+    rawMaterials = json;
   }
+
+  
 
   
 </script>
@@ -34,7 +38,7 @@ import { fetchBarcodeInfo, fetchIngredientsInfo } from "./barcodeAPI";
 <button></button>
 
 <input type="text" name="" id="" bind:value={inputBarcode}>
-<button on:click={fetchBarcode}>Fetch</button>
+<button on:click={fetchRawMaterials}>Fetch</button>
 
 <table>
   <tr>
@@ -42,7 +46,7 @@ import { fetchBarcodeInfo, fetchIngredientsInfo } from "./barcodeAPI";
   </tr>
   {#each rawMaterials as material}
     <tr>
-      <td>{material}</td><td>알 수 없음</td>
+      <td>{material}</td><td>알 수 없음</td><td><button on:click={update}>채식</button><button>채식아님</button></td>
     </tr>
   {/each}
 </table>

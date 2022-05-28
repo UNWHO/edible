@@ -13,6 +13,7 @@
     Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
     apps.
   </p>
+  <div></div>
 
   <p>
     Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
