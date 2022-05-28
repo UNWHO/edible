@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
+import { AppManager } from './app.manager';
 import { AppService } from './app.service';
 import { RawMaterial, RawMaterialSchema } from './schema/rawMaterial.schema';
 
@@ -10,6 +11,6 @@ import { RawMaterial, RawMaterialSchema } from './schema/rawMaterial.schema';
     MongooseModule.forFeature([{name: RawMaterial.name, schema: RawMaterialSchema}])
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppManager],
 })
 export class AppModule {}

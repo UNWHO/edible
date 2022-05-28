@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import fetch from 'node-fetch'
+import { AppManager } from './app.manager';
+import { rawMaterialDto } from './schema/DTO';
 import { RawMaterial, RawMaterialDocument } from './schema/rawMaterial.schema';
-import { rawMaterialDto } from './schema/rawMaterialDTO';
 
 @Injectable()
 export class AppService {
-  constructor(@InjectModel(RawMaterial.name) private rawMaterialModel: Model<RawMaterialDocument>) {}
+  constructor(private readonly appManager: AppManager) {}
 
   private keyId: string = "57242a95cb1f448f961e";
   private url = "http://openapi.foodsafetykorea.go.kr/api/";
@@ -32,8 +33,8 @@ export class AppService {
     return [];
   }
 
-  async getRawMaterials(productReportNumbers: string[]): Promise<string[]> {
-    const ingredients = new Set<string>();
+  async getRawMaterials(productReportNumbers: string[]): Promise<rawMaterialDto[]> {
+    const rawMaterialNames = new Set<string>();
     const serviceId = "C002";
 
     console.log("Get Raw Materials API called");
@@ -48,25 +49,25 @@ export class AppService {
 
         if(json.C002.row !== undefined) {
           const rawIngredients = json.C002.row[0].RAWMTRL_NM.split(",") as Array<string>;
-          rawIngredients.forEach(rawIngredient => ingredients.add(rawIngredient));
+          rawIngredients.forEach(rawIngredient => rawMaterialNames.add(rawIngredient));
         }
       } 
 
-      return Array.from(ingredients);
+      
+      const savedRawMaterials = await this.appManager.findAll(Array.from(rawMaterialNames));
+      console.log(savedRawMaterials);
+      return Array.from(rawMaterialNames).map(name => {
+        const savedRawMaterial = savedRawMaterials.find(rm => rm.name === name);
+        return (savedRawMaterial) ? savedRawMaterial : {name: name, isVegetable: -1}
+      })
+      
+      return 
     } catch(e) {
       console.log("Failed to get Raw Materials : " + e);
     }
     
   }
 
-  async create(createRawMaterialDto: rawMaterialDto) {
-    const createdRawMaterial = new this.rawMaterialModel(createRawMaterialDto);
-    return createdRawMaterial.save();
-  }
 
-  async find(rawMaterialNames: string[]) {
-    const querys = rawMaterialNames.map(rawMaterialname => this.rawMaterialModel.find({name: rawMaterialname}).exec());
-    return await Promise.all(querys);
-  }
 
 }

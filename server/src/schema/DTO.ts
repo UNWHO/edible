@@ -1,4 +1,4 @@
 export type rawMaterialDto = {
     name: string,
-    isVegatable: number
+    isVegetable: number
 }
