@@ -1,7 +1,6 @@
 <script lang="ts">
 import { BrowserBarcodeReader, BrowserCodeReader } from "@zxing/library";
 import { onMount } from "svelte";
-import { fetchBarcodeInfo, fetchIngredientsInfo } from "./barcodeAPI";
   type RawMaterial = {
     name: string,
     isVegetable: number
@@ -21,6 +20,7 @@ import { fetchBarcodeInfo, fetchIngredientsInfo } from "./barcodeAPI";
     // });
   })
 
+  
   let inputBarcode = "8801117752804";
   let rawMaterials: Array<RawMaterial> = [];
   let changedRawMaterials: Array<RawMaterial> = [];
@@ -58,6 +58,8 @@ import { fetchBarcodeInfo, fetchIngredientsInfo } from "./barcodeAPI";
 
     if(result.ok) console.log("Success to save");
   }
+
+  
 
   
 </script>

@@ -9,12 +9,7 @@ export class AppController {
 
   @Get("/raw-materials")
   async getRawMaterials(@Query() query: {barcode: string}) {
-    
-    
-    const productReportNumbers = await this.appService.getProductReportNumbers(query.barcode);
-    const rawMaterials = await this.appService.getRawMaterials(productReportNumbers);
-  
-    return JSON.stringify(rawMaterials);
+    return this.appService.getRawMaterials(query.barcode);
   }
 
   @Get("/hello")
@@ -24,11 +19,9 @@ export class AppController {
 
   @Post("/update")
   async updateRawMaterials(@Body() body, @Res() res: Response) {
-    // console.log(body)
     try {
       const rawMaterials = body;
-      console.log(rawMaterials);
-      await this.appManager.update(rawMaterials);
+      await this.appManager.updateRawMaterials(rawMaterials);
       res.status(HttpStatus.OK).send("Success to update");
     } catch(e) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(e);
