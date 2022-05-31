@@ -21,7 +21,7 @@
 
   let isFetching = false;
 
-  const API_URL = "http://54.67.97.150:3030"
+  const API_URL = "http://54.67.97.150"
 
 
   const fetchProduct = async () => {
@@ -43,7 +43,7 @@
 
   const saveToServer = async () => {
     const changedRawMaterials = rawMaterials.filter((rawMaterial, i) => rawMaterial.edible !== product.rawMaterials[i].edible);
-    const result = await fetch(`http://localhost:3030/update`, {
+    const result = await fetch(`${API_URL}/update`, {
       method: "Post",
       headers: {
         "Content-Type": "application/json; charset=utf-8"
