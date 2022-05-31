@@ -10,6 +10,8 @@
     rawMaterials: Array<RawMaterial>
   }
 
+  type Status = "Initialized" | "Pending" | "Fetched";
+
   let barcode = "8801043036078";
   let product: Product = {
     barcode: "",
@@ -19,13 +21,13 @@
 
   let rawMaterials: Array<RawMaterial> = [];
 
-  let isFetching = false;
+  let status: Status = "Initialized";
 
   const API_URL = "http://54.67.97.150"
 
 
   const fetchProduct = async () => {
-    isFetching = true;
+    status = "Pending";
     try {
       const result = await fetch(`${API_URL}/raw-materials?barcode=${barcode}`);
       const json = await result.json();
@@ -38,7 +40,7 @@
     } catch(e) {
       alert("바코드 번호를 확인해주십시오");
     }
-    isFetching = false;
+    status = "Fetched";
   }
 
   const saveToServer = async () => {
@@ -65,8 +67,8 @@
  
 <main>
   <h1>Edible</h1>
-  {#if isFetching}
-    <div>Fetching...</div>
+  {#if status !== "Fetched"}
+    <div>{status === "Pending" ? "Loading..." : ""}</div>
   {:else}
     <div>
       <input type="text" name="" id="" bind:value={barcode}>
