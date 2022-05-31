@@ -67,13 +67,14 @@
  
 <main>
   <h1>Edible</h1>
-  {#if status !== "Fetched"}
-    <div>{status === "Pending" ? "Loading..." : ""}</div>
+  {#if status === "Pending"}
+    <div>Loading...</div>
   {:else}
     <div>
       <input type="text" name="" id="" bind:value={barcode}>
       <button on:click={fetchProduct}>Check</button>
     </div>
+    {#if status === "Fetched"}
     
     <h2>{product.name}</h2>
     <button on:click={saveToServer}>Save</button>
@@ -95,6 +96,7 @@
         </tr>
       {/each}
     </table>
+    {/if}
   {/if}
   
 </main>
