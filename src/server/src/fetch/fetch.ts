@@ -1,9 +1,10 @@
 import fetch from 'node-fetch'
+import { FetchedProductDto, ProductDto } from 'src/schema/DTO';
 
 const apiKey = process.env.API_KEY;
 const url = "http://openapi.foodsafetykorea.go.kr/api";
 
-export const fetchProductReportNumber = async function(barcode: string): Promise<string[]> {
+export const fetchProduct = async function(barcode: string): Promise<FetchedProductDto> {
     console.log(process.env.API_KEY)
     const serviceId = "C005";
     
@@ -16,12 +17,15 @@ export const fetchProductReportNumber = async function(barcode: string): Promise
 
       console.log(`${json.C005.row.length} Product Report Number parsed`);
 
-      return json.C005.row.map(elm => elm.PRDLST_REPORT_NO);
+      return {
+        name: json.C005.row[0].PRDLST_NM,
+        productReportNumbers: json.C005.row.map(elm => elm.PRDLST_REPORT_NO)
+      };
 
     } catch(e) {
       console.log("Failed to get Product Report Number : " + e);
+      return null;
     }
-    return [];
 }
 
 export const fetchRawMaterialNames = async function(productReportNumbers: string[]): Promise<string[]> {
@@ -43,6 +47,7 @@ export const fetchRawMaterialNames = async function(productReportNumbers: string
         } 
       } catch(e) {
         console.log("Failed to get Raw Materials : " + e);
+        return null;
       }
 
     return Array.from(rawMaterialNames);

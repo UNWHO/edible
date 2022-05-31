@@ -9,6 +9,9 @@ export class Product {
     barcode: string;
 
     @Prop()
+    name: string;
+
+    @Prop()
     rawMaterialNames: Array<string>;
 }
 

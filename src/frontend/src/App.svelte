@@ -1,65 +1,119 @@
 <script lang="ts">
-  import logo from './assets/svelte.png'
-  import Counter from './lib/Counter.svelte'
+  type RawMaterial = {
+    name: string,
+    edible: true | false | undefined
+  }
+
+  type Product = {
+    barcode: string,
+    name: string,
+    rawMaterials: Array<RawMaterial>
+  }
+
+  let barcode = "8801043036078";
+  let product: Product = {
+    barcode: "",
+    name: "",
+    rawMaterials: []
+  };
+
+  let rawMaterials: Array<RawMaterial> = [];
+
+  let isFetching = false;
+
+
+  const fetchProduct = async () => {
+    isFetching = true;
+    try {
+      const result = await fetch(`http://edible-env.eba-phmaych6.us-west-1.elasticbeanstalk.com/raw-materials?barcode=${barcode}`);
+      const json = await result.json();
+
+      console.log(json)
+      product = json
+
+      rawMaterials = [];
+      product.rawMaterials.forEach(rawMaterial => rawMaterials = [...rawMaterials, {name: rawMaterial.name, edible: rawMaterial.edible}]);
+    } catch(e) {
+      alert("바코드 번호를 확인해주십시오");
+    }
+    isFetching = false;
+  }
+
+  const saveToServer = async () => {
+    const changedRawMaterials = rawMaterials.filter((rawMaterial, i) => rawMaterial.edible !== product.rawMaterials[i].edible);
+    const result = await fetch(`http://localhost:3030/update`, {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify(changedRawMaterials)
+    })
+
+    if(result.ok){
+      alert("Success to save");
+      fetchProduct();
+    }
+    else
+      alert("Failed to save");
+  }
+
+
 
 </script>
  
 <main>
   <h1>Edible</h1>
-  <Counter />
-
-  <p>
-    Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
-    apps.
-  </p>
-  <div></div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
-    the officially supported framework, also powered by Vite!
-  </p>
+  {#if isFetching}
+    <div>Fetching...</div>
+  {:else}
+    <div>
+      <input type="text" name="" id="" bind:value={barcode}>
+      <button on:click={fetchProduct}>Check</button>
+    </div>
+    
+    <h2>{product.name}</h2>
+    <button on:click={saveToServer}>Save</button>
+    <table>
+      <tr>
+        <th>Raw Element</th>
+        <th>Edible</th>
+      </tr>
+      {#each rawMaterials as rawMaterial}
+        <tr>
+          <td>{rawMaterial.name}</td>
+          <td>
+            <select name="" id="" bind:value={rawMaterial.edible} class={rawMaterial.edible + ""}>
+              <option value={true} class="true">Edible</option>
+              <option value={false} class="false">Inedible</option>
+              <option value={undefined} class="unknown">Unknown</option>
+            </select>
+          </td>
+        </tr>
+      {/each}
+    </table>
+  {/if}
+  
 </main>
 
 <style>
-  :root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-
-  main {
+  select {
+    border: none;
+    -webkit-appearance:none;
+    width: 6em;
     text-align: center;
-    padding: 1em;
-    margin: 0 auto;
   }
 
-  img {
-    height: 16rem;
-    width: 16rem;
+  .true {
+    color: green;
+    font-weight: bold;
   }
 
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4rem;
-    font-weight: 100;
-    line-height: 1.1;
-    margin: 2rem auto;
-    max-width: 14rem;
+  .false {
+    color: red;
+    font-weight: bold;
   }
 
-  p {
-    max-width: 14rem;
-    margin: 1rem auto;
-    line-height: 1.35;
-  }
-
-  @media (min-width: 480px) {
-    h1 {
-      max-width: none;
-    }
-
-    p {
-      max-width: none;
-    }
+  .unknown {
+    color: black;
   }
 </style>

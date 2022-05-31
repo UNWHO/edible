@@ -1,5 +1,7 @@
 import { Body, Controller, Get, HttpStatus, Post, Query, Req, Res,  } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { send } from 'process';
+import { RawMaterialDto } from 'src/schema/DTO';
 import { AppManager } from './app.manager';
 import { AppService } from './app.service';
 
@@ -8,19 +10,29 @@ export class AppController {
   constructor(private readonly appService: AppService, private readonly appManager: AppManager) {}
 
   @Get("/raw-materials")
-  async getRawMaterials(@Query() query: {barcode: string}) {
-    return this.appService.getRawMaterials(query.barcode);
+  async getRawMaterials(@Query() query: {barcode: string}, @Res() res: Response) {
+    const product = await this.appService.getProduct(query.barcode);
+    if(product === null) 
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+    
+    res.send(product);
   }
 
-  @Get("/hello")
+  @Get("/")
   sayHello() {
     return "hello";
+  }
+
+  
+  @Get("/ping")
+  ping() {
+    return "ping";
   }
 
   @Post("/update")
   async updateRawMaterials(@Body() body, @Res() res: Response) {
     try {
-      const rawMaterials = body;
+      const rawMaterials: RawMaterialDto[] = body;
       await this.appManager.updateRawMaterials(rawMaterials);
       res.status(HttpStatus.OK).send("Success to update");
     } catch(e) {

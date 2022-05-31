@@ -9,7 +9,7 @@ export class RawMaterial {
     name: string;
 
     @Prop()
-    isVegetable: number;
+    edible: true | false | undefined;
 }
 
 export const RawMaterialSchema = SchemaFactory.createForClass(RawMaterial);

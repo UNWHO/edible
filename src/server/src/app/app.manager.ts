@@ -39,7 +39,7 @@ export class AppManager {
         const querys = rawMaterials.map(rawMaterial => {
             this.rawMaterialModel.updateOne(
                 { name: rawMaterial.name }, 
-                { isVegetable: rawMaterial.isVegetable },
+                { edible: rawMaterial.edible },
                 { upsert: true }
             ).exec();
         });
