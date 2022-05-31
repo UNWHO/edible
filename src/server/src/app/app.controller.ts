@@ -17,12 +17,6 @@ export class AppController {
     
     res.send(product);
   }
-
-  @Get("/")
-  sayHello() {
-    return "hello";
-  }
-
   
   @Get("/ping")
   ping() {

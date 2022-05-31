@@ -21,11 +21,13 @@
 
   let isFetching = false;
 
+  const API_URL = "http://54.67.97.150:3030"
+
 
   const fetchProduct = async () => {
     isFetching = true;
     try {
-      const result = await fetch(`http://edible-env.eba-phmaych6.us-west-1.elasticbeanstalk.com/raw-materials?barcode=${barcode}`);
+      const result = await fetch(`${API_URL}/raw-materials?barcode=${barcode}`);
       const json = await result.json();
 
       console.log(json)
