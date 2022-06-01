@@ -90,7 +90,7 @@
             <select name="" id="" bind:value={rawMaterial.edible} class={rawMaterial.edible + ""}>
               <option value={true} class="true">Edible</option>
               <option value={false} class="false">Inedible</option>
-              <option value={undefined} class="unknown">Unknown</option>
+              <option value={undefined} class="unknown" disabled hidden>Unknown</option>
             </select>
           </td>
         </tr>
